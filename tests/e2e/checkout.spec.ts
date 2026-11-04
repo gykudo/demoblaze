@@ -1,44 +1,53 @@
 import { test, expect } from '@playwright/test';
-import { CartPage } from '../../src/pages/cart.page';
+import { LoginModal } from '../../src/page-objects/login.modal';
+import { CartPage, OrderDetails } from '../../src/page-objects/cart.page';
 
-test.describe('Cart & Checkout Flow', () => {
+test.describe('DemoBlaze E2E Core Demo Flow', () => {
+  let loginModal: LoginModal;
+  let cartPage: CartPage;
+
+  const orderPayload: OrderDetails = {
+    name: 'Senior QA Engineer',
+    country: 'Vietnam',
+    city: 'Ho Chi Minh',
+    card: '4532015599881122',
+    month: '12',
+    year: '2028',
+  };
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    loginModal = new LoginModal(page);
+    cartPage = new CartPage(page);
+    await loginModal.navigateTo('/');
   });
 
-  test('User can add item to cart and place an order', async ({ page }) => {
-    // Handle dialog alert for "Product added"
-    page.once('dialog', async (dialog) => {
-      expect(dialog.message()).toContain('Product added');
-      await dialog.accept();
-    });
+  test('E2E: Login -> Select product -> Add to Cart -> Checkout & Verify Order', async ({ page }) => {
+    // 1. Login
+    await loginModal.login('testuser_qa_2026', 'Password123!');
+    await loginModal.verifyUserLoggedIn('testuser_qa_2026');
 
-    // 1. Select product and add to cart
+    // 2. Chọn sản phẩm từ trang chủ
     await page.click('text=Samsung galaxy s6');
-    await page.click('text=Add to cart');
+    await page.waitForURL('**/prod.html?idp_=1');
 
-    // 2. Navigate to cart
-    await page.click('#cartur');
-    await expect(page.locator('.success')).toBeVisible();
+    // 3. Create listener get Dialog before clicking on Add to cart button
+    const dialogPromise = cartPage.handleDialog('Product added');
+    await page.getByRole('link', { name: 'Add to cart' }).click();
+    await dialogPromise; // Wait Confirm 
 
-    // 3. Initiate checkout
-    const cartPage = new CartPage(page);
-    await cartPage.placeOrderButton.click();
+    // 4. Redirect to Cart Page
+    await cartPage.navigateToCart();
+    await expect(page.locator('.success')).toBeVisible(); // Verify product on table
 
-    // 4. Fill customer details and submit
-    await cartPage.fillPurchaseForm({
-      name: 'QA Engineer',
-      country: 'Vietnam',
-      city: 'Ho Chi Minh',
-      card: '4111222233334444',
-      month: '12',
-      year: '2026'
-    });
+    // 5. Exxecute Place Order
+    await cartPage.initiateCheckout();
+    await cartPage.fillPurchaseForm(orderPayload);
     await cartPage.submitPurchase();
 
-    // 5. Assert confirmation modal
-    await expect(cartPage.verifyPurchaseConfirmation).toBeVisible();
-    await expect(cartPage.verifyPurchaseConfirmation).toContainText('Thank you for your purchase!');
-    await cartPage.confirmOkButton.click();
+    // 6. Verify Purchase Successfull
+    const receiptText = await cartPage.verifyPurchaseConfirmation();
+    expect(receiptText).toContain('Amount: 360 USD');
+    expect(receiptText).toContain(`Card Number: ${orderPayload.card}`);
+    expect(receiptText).toContain(`Name: ${orderPayload.name}`);
   });
 });
