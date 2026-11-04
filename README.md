@@ -85,8 +85,8 @@ Ensure you have the following installed on your machine:
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/demoblaze-playwright-ts.git
-cd demoblaze-playwright-ts
+git clone https://github.com/gykudo/demoblaze.git
+cd demoblaze
 
 # Install project node modules
 npm ci
