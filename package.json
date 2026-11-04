@@ -1,0 +1,41 @@
+{
+  "name": "demoblaze-playwright-ts",
+  "version": "1.0.0",
+  "description": "Production-grade Playwright & TypeScript E2E testing framework for DemoBlaze",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:chrome": "playwright test --project=\"Chromium - Desktop\"",
+    "test:firefox": "playwright test --project=\"Firefox - Desktop\"",
+    "test:webkit": "playwright test --project=\"WebKit - Mobile Safari\"",
+    "test:e2e": "playwright test tests/e2e/",
+    "test:api": "playwright test tests/api/",
+    "report": "playwright show-report",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "demoblaze",
+    "e2e-testing",
+    "automation-framework",
+    "qa",
+    "page-object-model"
+  ],
+  "author": "Senior Full-Stack Automation Engineer",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  }
+}

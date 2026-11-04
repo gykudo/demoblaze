@@ -1,0 +1,51 @@
+name: Playwright E2E Regression Suite
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * *' # Daily midnight execution
+
+jobs:
+  test:
+    name: Run Playwright Tests
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/2, 2/2]
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers & System Dependencies
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright Test Suite
+        run: npx playwright test --shard=${{ matrix.shard }}
+        env:
+          BASE_URL: https://www.demoblaze.com
+
+      - name: Upload Test Execution Artifacts on Failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-artifacts-${{ strategy.job-index }}
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 14
