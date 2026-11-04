@@ -26,7 +26,7 @@ test.describe('Cart & Checkout Flow', () => {
     await cartPage.placeOrderButton.click();
 
     // 4. Fill customer details and submit
-    await cartPage.fillCheckoutForm({
+    await cartPage.fillPurchaseForm({
       name: 'QA Engineer',
       country: 'Vietnam',
       city: 'Ho Chi Minh',
@@ -34,11 +34,11 @@ test.describe('Cart & Checkout Flow', () => {
       month: '12',
       year: '2026'
     });
-    await cartPage.completePurchase();
+    await cartPage.submitPurchase();
 
     // 5. Assert confirmation modal
-    await expect(cartPage.confirmationModal).toBeVisible();
-    await expect(cartPage.confirmationModal).toContainText('Thank you for your purchase!');
+    await expect(cartPage.verifyPurchaseConfirmation).toBeVisible();
+    await expect(cartPage.verifyPurchaseConfirmation).toContainText('Thank you for your purchase!');
     await cartPage.confirmOkButton.click();
   });
 });
