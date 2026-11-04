@@ -34,7 +34,7 @@ export class CartPage extends BasePage {
     this.cardInput = page.locator('#card');
     this.monthInput = page.locator('#month');
     this.yearInput = page.locator('#year');
-    this.purchaseButton = page.getByRole('button', { name: 'Purchase' });
+    this.purchaseButton = page.locator('#orderModal').getByRole('button', { name: 'Purchase' });
     this.sweetAlertModal = page.locator('.sweet-alert');
     this.sweetAlertText = page.locator('.sweet-alert p');
     this.confirmOkButton = page.getByRole('button', { name: 'OK' });
