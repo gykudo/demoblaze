@@ -13,7 +13,8 @@ export class LoginModal extends BasePage {
     this.loginNavButton = page.locator('#login2');
     this.usernameInput = page.locator('#loginusername');
     this.passwordInput = page.locator('#loginpassword');
-    this.submitButton = page.locator('#logInModal .btn-primary');
+    // Sử dụng scope rõ ràng trong modal login để tránh nhầm nút
+    this.submitButton = page.locator('#logInModal').getByRole('button', { name: 'Log in' });
     this.userGreeting = page.locator('#nameofuser');
   }
 
